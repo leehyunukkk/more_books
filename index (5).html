@@ -27,12 +27,12 @@
 
   /* ---------- HEADER ---------- */
   header{
-    padding:48px 40px 0;
+    padding:40px;
     display:flex; align-items:baseline; justify-content:space-between;
   }
   header .wordmark{
     display:block;
-    height:26px;
+    height:44px;
     width:auto;
   }
   header .index{
@@ -144,9 +144,28 @@
   .lightbox .lb-next{ right:40px; top:50%; transform:translateY(-50%); font-size:28px; }
   .lightbox .lb-close:hover, .lightbox .lb-prev:hover, .lightbox .lb-next:hover{ opacity:0.55; }
 
+  /* ---------- SOUND TOGGLE ---------- */
+  .sound-toggle{
+    position:fixed;
+    right:24px; bottom:24px;
+    width:42px; height:42px;
+    border-radius:9999px;
+    border:1px solid var(--hairline);
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:150;
+    transition:border-color 0.25s, transform 0.15s;
+  }
+  .sound-toggle:hover{ border-color:var(--ink); }
+  .sound-toggle:active{ transform:scale(0.94); }
+  .sound-toggle svg{ width:14px; height:14px; }
+  .sound-toggle svg path, .sound-toggle svg rect{ fill:var(--ink); }
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:640px){
-    header{ padding:32px 20px 0; }
+    header{ padding:24px; }
+    header .wordmark{ height:32px; }
     .lede{ padding:40px 20px 64px; }
     .works-wrap{ padding:0 2px 24px; }
     .works{ grid-template-columns:repeat(3, 1fr); gap:2px; }
@@ -155,6 +174,7 @@
     .lightbox .lb-prev{ left:16px; }
     .lightbox .lb-next{ right:16px; }
     .lightbox .lb-close{ right:20px; top:20px; }
+    .sound-toggle{ right:16px; bottom:16px; width:38px; height:38px; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -188,6 +208,12 @@
     <div class="lb-index serif" id="lb-index"></div>
     <button class="lb-next" id="lb-next" aria-label="다음 사진">›</button>
   </div>
+
+  <audio id="bgm" src="audio/track.mp3" loop preload="none"></audio>
+  <button class="sound-toggle" id="sound-toggle" aria-label="음악 재생">
+    <svg id="icon-play" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M3 2l11 6-11 6V2z"/></svg>
+    <svg id="icon-pause" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="display:none"><rect x="3" y="2" width="3.4" height="12"/><rect x="9.6" y="2" width="3.4" height="12"/></svg>
+  </button>
 
 <script>
   /* =========================================================
@@ -308,6 +334,28 @@
     if(e.key === 'Escape') closeLightbox();
     if(e.key === 'ArrowRight') nextPhoto();
     if(e.key === 'ArrowLeft') prevPhoto();
+  });
+
+  // ---------- Background music toggle ----------
+  const bgm = document.getElementById('bgm');
+  const soundToggle = document.getElementById('sound-toggle');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+
+  soundToggle.addEventListener('click', () => {
+    if(bgm.paused){
+      bgm.play().catch(() => {});
+    }else{
+      bgm.pause();
+    }
+  });
+  bgm.addEventListener('play', () => {
+    iconPlay.style.display = 'none';
+    iconPause.style.display = 'block';
+  });
+  bgm.addEventListener('pause', () => {
+    iconPlay.style.display = 'block';
+    iconPause.style.display = 'none';
   });
 </script>
 
