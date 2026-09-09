@@ -20,23 +20,37 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Generate photo manifest
+      - name: Generate photo manifest (newest upload first)
         run: |
           python3 - <<'PY'
-          import json, os
+          import json, os, subprocess
 
           folder = 'photos/full'
           exts = ('.jpg', '.jpeg', '.png', '.webp')
-          files = sorted(
+          files = [
               f for f in os.listdir(folder)
               if f.lower().endswith(exts)
-          )
+          ]
+
+          def last_commit_time(filename):
+              path = os.path.join(folder, filename)
+              result = subprocess.run(
+                  ['git', 'log', '-1', '--format=%ct', '--', path],
+                  capture_output=True, text=True
+              )
+              value = result.stdout.strip()
+              return int(value) if value else 0
+
+          # newest upload (most recent commit touching the file) first
+          files.sort(key=last_commit_time, reverse=True)
 
           with open('photos/manifest.json', 'w') as fp:
               json.dump(files, fp, ensure_ascii=False, indent=2)
 
-          print('manifest.json generated with', len(files), 'photos:')
+          print('manifest.json generated with', len(files), 'photos (newest first):')
           print(files)
           PY
 
