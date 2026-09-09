@@ -28,12 +28,16 @@
   /* ---------- HEADER ---------- */
   header{
     padding:40px;
-    display:flex; align-items:baseline; justify-content:space-between;
+    display:flex; align-items:center; justify-content:space-between;
   }
   header .wordmark{
     display:block;
     height:44px;
     width:auto;
+  }
+  .header-right{
+    display:flex; flex-direction:column; align-items:center;
+    gap:10px;
   }
   header .index{
     font-size:12px;
@@ -144,6 +148,21 @@
   .lightbox .lb-next{ right:40px; top:50%; transform:translateY(-50%); font-size:28px; }
   .lightbox .lb-close:hover, .lightbox .lb-prev:hover, .lightbox .lb-next:hover{ opacity:0.55; }
 
+  /* ---------- SOUND TOGGLE ---------- */
+  .sound-toggle{
+    width:36px; height:36px;
+    border-radius:9999px;
+    border:1.5px solid #c17a0a;
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:background 0.25s, transform 0.15s;
+  }
+  .sound-toggle:hover{ background:rgba(193,122,10,0.1); }
+  .sound-toggle:active{ transform:scale(0.94); }
+  .sound-toggle svg{ width:13px; height:13px; }
+  .sound-toggle svg path, .sound-toggle svg rect{ fill:#c17a0a; }
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:640px){
     header{ padding:24px; }
@@ -167,7 +186,13 @@
 
   <header>
     <a href="#top"><img class="wordmark" src="logo/more-books-logo.png" alt="more books"></a>
-    <span class="index" id="header-count"></span>
+    <div class="header-right">
+      <button class="sound-toggle" id="sound-toggle" aria-label="음악 재생">
+        <svg id="icon-play" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M3 2l11 6-11 6V2z"/></svg>
+        <svg id="icon-pause" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="display:none"><rect x="3" y="2" width="3.4" height="12"/><rect x="9.6" y="2" width="3.4" height="12"/></svg>
+      </button>
+      <span class="index" id="header-count"></span>
+    </div>
   </header>
 
   <main id="top">
@@ -189,6 +214,8 @@
     <div class="lb-index serif" id="lb-index"></div>
     <button class="lb-next" id="lb-next" aria-label="다음 사진">›</button>
   </div>
+
+  <audio id="bgm" src="audio/track.mp3" loop preload="none"></audio>
 
 <script>
   /* =========================================================
@@ -309,6 +336,28 @@
     if(e.key === 'Escape') closeLightbox();
     if(e.key === 'ArrowRight') nextPhoto();
     if(e.key === 'ArrowLeft') prevPhoto();
+  });
+
+  // ---------- Background music toggle ----------
+  const bgm = document.getElementById('bgm');
+  const soundToggle = document.getElementById('sound-toggle');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+
+  soundToggle.addEventListener('click', () => {
+    if(bgm.paused){
+      bgm.play().catch(() => {});
+    }else{
+      bgm.pause();
+    }
+  });
+  bgm.addEventListener('play', () => {
+    iconPlay.style.display = 'none';
+    iconPause.style.display = 'block';
+  });
+  bgm.addEventListener('pause', () => {
+    iconPlay.style.display = 'block';
+    iconPause.style.display = 'none';
   });
 </script>
 
